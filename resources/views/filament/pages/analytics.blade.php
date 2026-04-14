@@ -1,136 +1,148 @@
-<x-filament::page class="space-y-8">
-    <x-filament::card>
-        <div class="space-y-2">
-            <h1 class="text-2xl font-bold">Analytics</h1>
-            <p class="text-sm text-gray-500">Detailed insights and metrics for your store performance.</p>
+<x-filament::page class="space-y-6">
+    <x-filament::section>
+        <x-slot name="heading">
+            Analytics
+        </x-slot>
+
+        <x-slot name="description">
+            Real-time event tracking from your database ({{ $this->rangeLabel() }}).
+        </x-slot>
+
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Showing events from <span class="font-medium text-gray-900 dark:text-gray-100">{{ $this->rangeLabel() }}</span>
+            </div>
+
+            <div class="w-full sm:w-64">
+                <select
+                    wire:model.live="range"
+                    class="w-full rounded-xl border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-gray-700 dark:bg-gray-900"
+                >
+                    <option value="today">Today</option>
+                    <option value="7d">Last 7 days</option>
+                    <option value="30d">Last 30 days</option>
+                </select>
+            </div>
         </div>
-    </x-filament::card>
+    </x-filament::section>
 
-    {{-- Main Stats (like dashboard) --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <x-filament::card class="p-5">
-            <p class="text-xs uppercase tracking-widest text-gray-400">Today Orders</p>
-            <h2 class="text-3xl font-bold">{{ $this->todayOrders }}</h2>
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-gray-400">PageView</p>
+                    <h2 class="mt-2 text-3xl font-bold">{{ $this->pageViewCount }}</h2>
+                </div>
+                <div class="rounded-xl bg-primary-500/10 p-2 text-primary-600 dark:text-primary-400">
+                    <x-filament::icon icon="heroicon-o-eye" class="h-6 w-6" />
+                </div>
+            </div>
         </x-filament::card>
 
         <x-filament::card class="p-5">
-            <p class="text-xs uppercase tracking-widest text-gray-400">This Month</p>
-            <h2 class="text-3xl font-bold">{{ $this->monthOrders }}</h2>
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-gray-400">ViewContent</p>
+                    <h2 class="mt-2 text-3xl font-bold">{{ $this->viewContentCount }}</h2>
+                </div>
+                <div class="rounded-xl bg-info-500/10 p-2 text-info-600 dark:text-info-400">
+                    <x-filament::icon icon="heroicon-o-document-text" class="h-6 w-6" />
+                </div>
+            </div>
         </x-filament::card>
 
         <x-filament::card class="p-5">
-            <p class="text-xs uppercase tracking-widest text-gray-400">Total Orders</p>
-            <h2 class="text-3xl font-bold">{{ $this->totalOrders }}</h2>
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-gray-400">AddToCart</p>
+                    <h2 class="mt-2 text-3xl font-bold">{{ $this->addToCartCount }}</h2>
+                </div>
+                <div class="rounded-xl bg-warning-500/10 p-2 text-warning-700 dark:text-warning-400">
+                    <x-filament::icon icon="heroicon-o-shopping-cart" class="h-6 w-6" />
+                </div>
+            </div>
         </x-filament::card>
 
         <x-filament::card class="p-5">
-            <p class="text-xs uppercase tracking-widest text-gray-400">Cancelled</p>
-            <h2 class="text-3xl font-bold text-red-500">{{ $this->cancelledOrders }}</h2>
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-gray-400">Purchase</p>
+                    <h2 class="mt-2 text-3xl font-bold">{{ $this->purchaseCount }}</h2>
+                </div>
+                <div class="rounded-xl bg-success-500/10 p-2 text-success-600 dark:text-success-400">
+                    <x-filament::icon icon="heroicon-o-check-badge" class="h-6 w-6" />
+                </div>
+            </div>
         </x-filament::card>
     </div>
 
-    {{-- Delivery Breakdown --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <x-filament::card class="p-5">
-            <p class="text-xs uppercase tracking-widest text-gray-400">Inside Dhaka Orders</p>
-            <h2 class="text-3xl font-bold">{{ $this->insideOrders }}</h2>
-            <p class="text-sm text-gray-500 mt-1">
-                {{ round(($this->insideOrders / max(1, $this->totalOrders)) * 100) }}% of total
-            </p>
+    <x-filament::section>
+        <x-slot name="heading">
+            Recent events
+        </x-slot>
+        <x-slot name="description">
+            Latest tracking events (sorted newest first).
+        </x-slot>
+
+        <x-filament::card class="p-0">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                    <thead class="bg-gray-50 dark:bg-gray-950/40">
+                        <tr>
+                            <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                Event
+                            </th>
+                            <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                Session
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                Metadata
+                            </th>
+                            <th class="whitespace-nowrap px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                Time
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
+                        @forelse($this->recentEvents as $event)
+                            <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-950/30">
+                                <td class="whitespace-nowrap px-4 py-3 align-top">
+                                    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                                        {{ $event->event_name }}
+                                    </span>
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 align-top text-sm text-gray-500 dark:text-gray-400">
+                                    @if($event->session_id)
+                                        <span class="font-mono text-xs">{{ \Illuminate\Support\Str::limit($event->session_id, 18, '…') }}</span>
+                                    @else
+                                        <span class="text-gray-400">—</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 align-top">
+                                    @php($pretty = $event->metadata ? json_encode($event->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null)
+                                    @if($pretty)
+                                        <pre class="max-w-[72ch] overflow-auto rounded-xl bg-gray-50 p-3 text-xs text-gray-700 ring-1 ring-gray-200 dark:bg-gray-950 dark:text-gray-200 dark:ring-gray-800">{{ $pretty }}</pre>
+                                    @else
+                                        <span class="text-sm text-gray-400">—</span>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-right align-top text-sm text-gray-500 dark:text-gray-400">
+                                    {{ optional($event->occurred_at ?? $event->created_at)->diffForHumans() }}
+                                    <div class="text-xs text-gray-400">
+                                        {{ optional($event->occurred_at ?? $event->created_at)->format('Y-m-d H:i:s') }}
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-10 text-center text-sm text-gray-500">
+                                    No tracking events found for this range.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </x-filament::card>
-
-        <x-filament::card class="p-5">
-            <p class="text-xs uppercase tracking-widest text-gray-400">Outside Dhaka Orders</p>
-            <h2 class="text-3xl font-bold">{{ $this->outsideOrders }}</h2>
-            <p class="text-sm text-gray-500 mt-1">
-                {{ round(($this->outsideOrders / max(1, $this->totalOrders)) * 100) }}% of total
-            </p>
-        </x-filament::card>
-    </div>
-
-    {{-- Favorite Color --}}
-    <x-filament::card class="p-5">
-        <p class="text-xs uppercase tracking-widest text-gray-400 mb-2">Most Popular Color</p>
-        <div class="space-y-1">
-            <h3 class="text-lg font-bold">{{ ucfirst(str_replace('#', '', $this->favoriteColor ?? 'N/A')) }} — {{ $this->favoriteColorCount }} orders</h3>
-            <p class="text-sm text-gray-500">
-                {{ $this->favoriteColorCount > 0 ? round(($this->favoriteColorCount / max(1, $this->totalOrders)) * 100) : 0 }}% preference
-            </p>
-        </div>
-    </x-filament::card>
-
-    {{-- Chart (matching dashboard green theme) --}}
-    <x-filament::card>
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Orders Last 7 Days</h3>
-            <span class="px-2 py-1 text-xs font-bold uppercase tracking-wide text-white bg-green-500 rounded">Live Data</span>
-        </div>
-        <div style="height:320px;" class="relative">
-            <canvas id="ordersChart"></canvas>
-        </div>
-    </x-filament::card>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const chartData = @json($this->getChartData() ?? []);
-        const safeData = (Array.isArray(chartData) && chartData.length) ? chartData : [0, 0, 0, 0, 0, 0, 0];
-
-        const isDark = document.documentElement.classList.contains('dark');
-        
-        const chart = new Chart(document.getElementById('ordersChart'), {
-            type: 'line',
-            data: {
-                labels: ['6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Yesterday', 'Today'],
-                datasets: [{
-                    label: 'Orders',
-                    data: safeData,
-                    borderColor: '#22c55e',
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                    fill: true,
-                    tension: 0.3,
-                    borderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    pointBackgroundColor: '#22c55e',
-                    pointBorderColor: isDark ? '#0f172a' : '#ffffff',
-                    pointBorderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: isDark ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255,255,255,0.98)',
-                        titleColor: isDark ? '#ffffff' : '#0f172a',
-                        bodyColor: isDark ? '#cbd5e1' : '#334155',
-                        borderColor: '#22c55e',
-                        borderWidth: 1,
-                        cornerRadius: 8,
-                        padding: 12
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { color: isDark ? 'rgba(71,85,105,0.28)' : 'rgba(148,163,184,0.2)' },
-                        ticks: { 
-                            color: isDark ? '#94a3b8' : '#64748b',
-                            font: { size: 12 }
-                        },
-                        border: { display: false }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: isDark ? 'rgba(71,85,105,0.28)' : 'rgba(148,163,184,0.2)' },
-                        ticks: { 
-                            color: isDark ? '#94a3b8' : '#64748b',
-                            font: { size: 12 }
-                        },
-                        border: { display: false }
-                    }
-                }
-            }
-        });
-    </script>
+    </x-filament::section>
 </x-filament::page>

@@ -31,4 +31,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'meta_pixel_id' => env('META_PIXEL_ID'),
+    'ga_measurement_id' => env('GA_MEASUREMENT_ID'),
+
 ];

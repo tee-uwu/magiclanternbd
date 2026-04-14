@@ -3,39 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>MagicLanternBD</title>
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
 
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 
-    @if(!empty($contents['facebook_pixel']))
-    <script>
-      !function(f,b,e,v,n,t,s){
-        if(f.fbq)return;n=f.fbq=function(){
-          n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)
-        };
-        if(!f._fbq)f._fbq=n;
-        n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];
-        t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)
-      }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+   @if(config('services.meta_pixel_id'))
+<script>
+!function(f,b,e,v,n,t,s){
+if(f.fbq)return;n=f.fbq=function(){
+n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)
+};
+if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];
+t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)
+}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
-      fbq('init', '{{ $contents['facebook_pixel'] }}');
-      fbq('track', 'PageView');
-    </script>
-    @endif
+fbq('init', '{{ config('services.meta_pixel_id') }}');
+</script>
 
-    @if(!empty($contents['google_analytics']))
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $contents['google_analytics'] }}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '{{ $contents['google_analytics'] }}');
-    </script>
-    @endif
+<noscript>
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id={{ config('services.meta_pixel_id') }}&ev=PageView&noscript=1"/>
+</noscript>
+@endif
+
+    <x-ga4-tracking />
+    <x-tracking-core />
 
     <style>
 :root {
@@ -3318,9 +3316,6 @@ footer::after {
 
 @if(session('success') == 'order_success')
 <script>
-  if (typeof fbq !== 'undefined') {
-    fbq('track', 'Purchase');
-  }
   if (typeof gtag !== 'undefined') {
     gtag('event', 'purchase');
   }
@@ -3345,6 +3340,14 @@ footer::after {
 
         selectedProductName = name;
         basePrice = price;
+
+        window.Analytics?.track('ViewContent', {
+            content_name: name,
+            product_name: name,
+            value: price,
+            currency: 'BDT',
+            color: color,
+        });
 
         document.getElementById('selectedProduct').value = name;
         document.getElementById('productNameDisplay').innerText = name;
@@ -3449,6 +3452,44 @@ footer::after {
     }
 
     window.addEventListener('DOMContentLoaded', function () {
+        window.Analytics?.track('PageView', {
+            path: window.location.pathname,
+            title: document.title,
+        });
+
+        @if(session('success') == 'order_success')
+        @php($orderTracking = session('order_tracking') ?: [])
+        window.Analytics?.track('Purchase', {
+            content_name: @json($orderTracking['product_name'] ?? $selectedOldProduct),
+            product_name: @json($orderTracking['product_name'] ?? $selectedOldProduct),
+            transaction_id: @json($orderTracking['transaction_id'] ?? null),
+            value: {{ (int) ($orderTracking['value'] ?? 0) }},
+            currency: @json($orderTracking['currency'] ?? 'BDT'),
+        });
+        @endif
+
+        // AddToCart: any explicit "order now" click (non-blocking)
+        const addToCartSelectors = [
+            '.product-card button.btn-primary',
+            '.sticky-btn',
+            '.topbar-order-btn',
+            '.hero-actions .btn-primary',
+        ];
+        const addToCartButtons = document.querySelectorAll(addToCartSelectors.join(','));
+        addToCartButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const qty = parseInt((document.getElementById('quantitySelect') || {}).value || '1', 10);
+                const value = basePrice * (Number.isFinite(qty) ? qty : 1);
+                window.Analytics?.track('AddToCart', {
+                    content_name: selectedProductName,
+                    product_name: selectedProductName,
+                    value: value,
+                    currency: 'BDT',
+                    quantity: Number.isFinite(qty) ? qty : 1,
+                });
+            }, { passive: true });
+        });
+
         // Theme toggle functionality
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;

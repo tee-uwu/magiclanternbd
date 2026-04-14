@@ -24,7 +24,7 @@ class OrderController extends Controller
         $expectedDelivery = $validated['delivery_area'] === 'inside' ? 70 : 130;
         $validated['delivery_charge'] = $expectedDelivery;
 
-        Order::create([
+        $order = Order::create([
             'name' => $validated['name'],
             'phone' => $validated['phone'],
             'address' => $validated['address'],
@@ -37,6 +37,15 @@ class OrderController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect('/#order')->with('success', 'order_success');
+        return redirect('/#order')
+            ->with('success', 'order_success')
+            ->with('order_tracking', [
+                'transaction_id' => (string) $order->id,
+                'product_name' => $validated['product'],
+                'value' => (int) $validated['total_price'],
+                'currency' => 'BDT',
+                'quantity' => (int) $validated['quantity'],
+                'delivery_area' => $validated['delivery_area'],
+            ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Content;
 use App\Models\Review;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Api\TrackingEventController;
 
 Route::get('/', function () {
     $posts = Post::latest()->get();
@@ -28,3 +29,7 @@ Route::get('/register', function () {
 });
 
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+
+Route::post('/track-event', [TrackingEventController::class, 'store'])
+    ->middleware('throttle:track-events')
+    ->name('track-event.store');

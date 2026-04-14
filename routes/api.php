@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\TrackingEventController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,3 +20,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/posts', [PostController::class, 'index']);
+
+Route::post('/track-event', [TrackingEventController::class, 'store'])
+    ->middleware('throttle:track-events');

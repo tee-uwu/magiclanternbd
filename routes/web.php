@@ -23,6 +23,11 @@ Route::get('/login', function () {
     return redirect('/admin/login');
 })->name('login');
 
+// Always send /admin to the Filament login screen
+Route::get('/admin', function () {
+    return redirect('/admin/login');
+});
+
 // Optional no-register route to avoid broken link on the welcome page.
 Route::get('/register', function () {
     abort(404);

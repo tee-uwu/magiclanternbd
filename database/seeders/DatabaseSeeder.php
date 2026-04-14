@@ -12,6 +12,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        \App\Models\User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin',
+                'password' => '12345678',
+            ],
+        );
+
         \App\Models\Product::create([
             'name' => 'Golden Glow',
             'price' => 1290,
@@ -60,7 +68,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Content::create(['key' => 'hero_title', 'value' => 'Magic Lantern BD - Premium Mood Lights']);
         \App\Models\Content::create(['key' => 'phone', 'value' => '01XXXXXXXXX']);
         // Seed reviews
-        Review::create([
+        \App\Models\Review::create([
             'name' => 'রাফি হাসান',
             'place' => 'ঢাকা',
             'text' => 'লাইটের গ্লোটা সত্যি খুব সুন্দর। রুমের পরিবেশ পুরো বদলে যায়।',
@@ -68,7 +76,7 @@ class DatabaseSeeder extends Seeder
             'is_published' => true,
         ]);
 
-        Review::create([
+        \App\Models\Review::create([
             'name' => 'নুসরাত জাহান',
             'place' => 'চট্টগ্রাম',
             'text' => 'উপহার হিসেবে নিয়েছিলাম। প্যাকেজিং, লুক আর কোয়ালিটি — সবই দারুণ।',
@@ -76,7 +84,7 @@ class DatabaseSeeder extends Seeder
             'is_published' => true,
         ]);
 
-        Review::create([
+        \App\Models\Review::create([
             'name' => 'তানভীর রহমান',
             'place' => 'সিলেট',
             'text' => 'রাতে বেডসাইডে ব্যবহার করি। আলো নরম, চোখে লাগে না, দেখতে অনেক প্রিমিয়াম।',
@@ -84,7 +92,7 @@ class DatabaseSeeder extends Seeder
             'is_published' => true,
         ]);
 
-        Review::create([
+        \App\Models\Review::create([
             'name' => 'সুমাইয়া আক্তার',
             'place' => 'রাজশাহী',
             'text' => 'ডেলিভারি দ্রুত এসেছে এবং পণ্যের কোয়ালিটি একদম দারুণ!',

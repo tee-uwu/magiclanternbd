@@ -34,7 +34,7 @@
                     <h2 class="mt-2 text-3xl font-bold">{{ $this->pageViewCount }}</h2>
                 </div>
                 <div class="rounded-xl bg-primary-500/10 p-2 text-primary-600 dark:text-primary-400">
-                    <x-filament::icon icon="heroicon-o-eye" class="h-6 w-6" />
+                    <x-heroicon-o-eye class="h-6 w-6" />
                 </div>
             </div>
         </x-filament::card>
@@ -46,7 +46,7 @@
                     <h2 class="mt-2 text-3xl font-bold">{{ $this->viewContentCount }}</h2>
                 </div>
                 <div class="rounded-xl bg-info-500/10 p-2 text-info-600 dark:text-info-400">
-                    <x-filament::icon icon="heroicon-o-document-text" class="h-6 w-6" />
+                    <x-heroicon-o-document-text class="h-6 w-6" />
                 </div>
             </div>
         </x-filament::card>
@@ -58,7 +58,7 @@
                     <h2 class="mt-2 text-3xl font-bold">{{ $this->addToCartCount }}</h2>
                 </div>
                 <div class="rounded-xl bg-warning-500/10 p-2 text-warning-700 dark:text-warning-400">
-                    <x-filament::icon icon="heroicon-o-shopping-cart" class="h-6 w-6" />
+                    <x-heroicon-o-shopping-cart class="h-6 w-6" />
                 </div>
             </div>
         </x-filament::card>
@@ -70,7 +70,7 @@
                     <h2 class="mt-2 text-3xl font-bold">{{ $this->purchaseCount }}</h2>
                 </div>
                 <div class="rounded-xl bg-success-500/10 p-2 text-success-600 dark:text-success-400">
-                    <x-filament::icon icon="heroicon-o-check-badge" class="h-6 w-6" />
+                    <x-heroicon-o-badge-check class="h-6 w-6" />
                 </div>
             </div>
         </x-filament::card>

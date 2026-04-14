@@ -8,6 +8,7 @@ use Filament\Pages\Page;
 use App\Models\TrackingEvent;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Analytics extends Page
 {
@@ -54,6 +55,47 @@ class Analytics extends Page
             ->whereBetween('created_at', [$start, $end]);
     }
 
+    private function aggregateRow(): array
+    {
+        $q = $this->baseQuery();
+
+        // MySQL JSON extraction for revenue from metadata.event.value
+        $revenueExpr = "COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.event.value')) AS DECIMAL(18,2)), 0)";
+
+        $row = $q->selectRaw("
+            SUM(CASE WHEN event_name IN ('PageView','page_view') THEN 1 ELSE 0 END) AS page_views,
+            SUM(CASE WHEN event_name IN ('ViewContent','view_item') THEN 1 ELSE 0 END) AS view_content,
+            SUM(CASE WHEN event_name IN ('AddToCart','add_to_cart') THEN 1 ELSE 0 END) AS add_to_cart,
+            SUM(CASE WHEN event_name IN ('Purchase','purchase') THEN 1 ELSE 0 END) AS purchases,
+            SUM(CASE WHEN event_name IN ('Purchase','purchase') THEN {$revenueExpr} ELSE 0 END) AS revenue
+        ")->first();
+
+        return [
+            'page_views' => (int) ($row->page_views ?? 0),
+            'view_content' => (int) ($row->view_content ?? 0),
+            'add_to_cart' => (int) ($row->add_to_cart ?? 0),
+            'purchases' => (int) ($row->purchases ?? 0),
+            'revenue' => (float) ($row->revenue ?? 0),
+        ];
+    }
+
+    public function getRevenueTotalProperty(): float
+    {
+        return $this->aggregateRow()['revenue'];
+    }
+
+    public function getConversionViewToCartProperty(): float
+    {
+        $agg = $this->aggregateRow();
+        return $agg['view_content'] > 0 ? ($agg['add_to_cart'] / $agg['view_content']) : 0.0;
+    }
+
+    public function getConversionCartToPurchaseProperty(): float
+    {
+        $agg = $this->aggregateRow();
+        return $agg['add_to_cart'] > 0 ? ($agg['purchases'] / $agg['add_to_cart']) : 0.0;
+    }
+
     private function countFor(array $names): int
     {
         return (int) $this->baseQuery()
@@ -86,7 +128,54 @@ class Analytics extends Page
         return $this->baseQuery()
             ->orderByDesc('created_at')
             ->limit(50)
-            ->get(['id', 'event_name', 'session_id', 'metadata', 'occurred_at', 'created_at']);
+            ->get(['id', 'event_uuid', 'event_name', 'session_id', 'page_url', 'referrer', 'metadata', 'user_ip', 'user_agent', 'occurred_at', 'created_at']);
+    }
+
+    public function getDailySeriesProperty(): array
+    {
+        $start = $this->startAt();
+        $days = match ($this->range) {
+            '7d' => 7,
+            '30d' => 30,
+            default => 1,
+        };
+
+        $revenueExpr = "COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.event.value')) AS DECIMAL(18,2)), 0)";
+
+        $rows = $this->baseQuery()
+            ->selectRaw("
+                DATE(created_at) AS d,
+                SUM(CASE WHEN event_name IN ('PageView','page_view') THEN 1 ELSE 0 END) AS page_views,
+                SUM(CASE WHEN event_name IN ('ViewContent','view_item') THEN 1 ELSE 0 END) AS view_content,
+                SUM(CASE WHEN event_name IN ('AddToCart','add_to_cart') THEN 1 ELSE 0 END) AS add_to_cart,
+                SUM(CASE WHEN event_name IN ('Purchase','purchase') THEN 1 ELSE 0 END) AS purchases,
+                SUM(CASE WHEN event_name IN ('Purchase','purchase') THEN {$revenueExpr} ELSE 0 END) AS revenue
+            ")
+            ->groupBy('d')
+            ->orderBy('d')
+            ->get()
+            ->keyBy('d');
+
+        $labels = [];
+        $pageViews = [];
+        $viewContent = [];
+        $addToCart = [];
+        $purchases = [];
+        $revenue = [];
+
+        for ($i = 0; $i < $days; $i++) {
+            $date = $start->addDays($i);
+            $key = $date->format('Y-m-d');
+            $labels[] = $date->format('M j');
+            $r = $rows->get($key);
+            $pageViews[] = (int) ($r->page_views ?? 0);
+            $viewContent[] = (int) ($r->view_content ?? 0);
+            $addToCart[] = (int) ($r->add_to_cart ?? 0);
+            $purchases[] = (int) ($r->purchases ?? 0);
+            $revenue[] = (float) ($r->revenue ?? 0);
+        }
+
+        return compact('labels', 'pageViews', 'viewContent', 'addToCart', 'purchases', 'revenue');
     }
 
     public function rangeLabel(): string

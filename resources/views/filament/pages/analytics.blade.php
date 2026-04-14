@@ -25,6 +25,21 @@
         <x-filament::card class="p-5">
             <div class="flex items-start justify-between">
                 <div>
+                    <p class="text-xs uppercase tracking-widest text-gray-400">Revenue</p>
+                    <h2 class="mt-2 text-3xl font-bold">
+                        ৳ {{ number_format($this->revenueTotal, 2) }}
+                    </h2>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">From Purchase events</p>
+                </div>
+                <div class="rounded-xl bg-success-500/10 p-2 text-success-600 dark:text-success-400">
+                    <x-heroicon-o-cash class="h-6 w-6" />
+                </div>
+            </div>
+        </x-filament::card>
+
+        <x-filament::card class="p-5">
+            <div class="flex items-start justify-between">
+                <div>
                     <p class="text-xs uppercase tracking-widest text-gray-400">PageView</p>
                     <h2 class="mt-2 text-3xl font-bold">{{ $this->pageViewCount }}</h2>
                 </div>
@@ -71,6 +86,64 @@
         </x-filament::card>
     </div>
 
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <x-filament::card class="p-5 lg:col-span-1">
+            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Conversion rates</div>
+            <div class="mt-4 space-y-4">
+                <div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-300">ViewContent → AddToCart</span>
+                        <span class="font-semibold">{{ number_format($this->conversionViewToCart * 100, 2) }}%</span>
+                    </div>
+                    <div class="mt-2 h-2 rounded-full bg-gray-100 dark:bg-gray-800">
+                        <div class="h-2 rounded-full bg-info-500" style="width: {{ min(100, max(0, $this->conversionViewToCart * 100)) }}%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-300">AddToCart → Purchase</span>
+                        <span class="font-semibold">{{ number_format($this->conversionCartToPurchase * 100, 2) }}%</span>
+                    </div>
+                    <div class="mt-2 h-2 rounded-full bg-gray-100 dark:bg-gray-800">
+                        <div class="h-2 rounded-full bg-success-500" style="width: {{ min(100, max(0, $this->conversionCartToPurchase * 100)) }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </x-filament::card>
+
+        <x-filament::card class="p-5 lg:col-span-2">
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Events over time</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Grouped daily ({{ $this->rangeLabel() }})</div>
+            </div>
+            <div class="mt-4" style="height: 320px;">
+                <canvas id="eventsLineChart"></canvas>
+            </div>
+        </x-filament::card>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <x-filament::card class="p-5 lg:col-span-1">
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Funnel</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">ViewContent → AddToCart → Purchase</div>
+            </div>
+            <div class="mt-4" style="height: 320px;">
+                <canvas id="funnelChart"></canvas>
+            </div>
+        </x-filament::card>
+
+        <x-filament::card class="p-5 lg:col-span-2">
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Revenue over time</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">From Purchase events</div>
+            </div>
+            <div class="mt-4" style="height: 320px;">
+                <canvas id="revenueLineChart"></canvas>
+            </div>
+        </x-filament::card>
+    </div>
+
     <x-filament::card class="p-5">
         <div class="mb-4">
             <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent events</div>
@@ -85,7 +158,13 @@
                             Event
                         </th>
                         <th class="whitespace-nowrap px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                            UUID
+                        </th>
+                        <th class="whitespace-nowrap px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                             Session
+                        </th>
+                        <th class="whitespace-nowrap px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                            URL
                         </th>
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                             Metadata
@@ -104,11 +183,31 @@
                                 </span>
                             </td>
                             <td class="whitespace-nowrap px-5 py-3 align-top text-sm text-gray-500 dark:text-gray-400">
+                                @if($event->event_uuid)
+                                    <span class="font-mono text-xs">{{ \Illuminate\Support\Str::limit($event->event_uuid, 18, '…') }}</span>
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
+                            <td class="whitespace-nowrap px-5 py-3 align-top text-sm text-gray-500 dark:text-gray-400">
                                 @if($event->session_id)
                                     <span class="font-mono text-xs">{{ \Illuminate\Support\Str::limit($event->session_id, 18, '…') }}</span>
                                 @else
                                     <span class="text-gray-400">—</span>
                                 @endif
+                            </td>
+                            <td class="whitespace-nowrap px-5 py-3 align-top text-xs text-gray-500 dark:text-gray-400">
+                                @if($event->page_url)
+                                    <span class="block max-w-[36ch] truncate" title="{{ $event->page_url }}">{{ $event->page_url }}</span>
+                                    @if($event->referrer)
+                                        <span class="block max-w-[36ch] truncate text-gray-400" title="{{ $event->referrer }}">ref: {{ $event->referrer }}</span>
+                                    @endif
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                                <span class="block text-gray-400">
+                                    {{ $event->user_ip }} · {{ \Illuminate\Support\Str::limit($event->user_agent, 28, '…') }}
+                                </span>
                             </td>
                             <td class="px-5 py-3 align-top">
                                 @php($pretty = $event->metadata ? json_encode($event->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null)
@@ -127,7 +226,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-5 py-10 text-center text-sm text-gray-500">
+                            <td colspan="6" class="px-5 py-10 text-center text-sm text-gray-500">
                                 No tracking events found for this range.
                             </td>
                         </tr>
@@ -136,4 +235,95 @@
             </table>
         </div>
     </x-filament::card>
+
+    @php($series = $this->dailySeries)
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            const labels = @json($series['labels'] ?? []);
+            const pageViews = @json($series['pageViews'] ?? []);
+            const viewContent = @json($series['viewContent'] ?? []);
+            const addToCart = @json($series['addToCart'] ?? []);
+            const purchases = @json($series['purchases'] ?? []);
+            const revenue = @json($series['revenue'] ?? []);
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const grid = isDark ? 'rgba(71,85,105,0.28)' : 'rgba(148,163,184,0.2)';
+            const tick = isDark ? '#94a3b8' : '#64748b';
+
+            const eventsCtx = document.getElementById('eventsLineChart');
+            if (eventsCtx) {
+                new Chart(eventsCtx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'PageViews', data: pageViews, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.12)', fill: true, tension: 0.35, pointRadius: 2 },
+                            { label: 'ViewContent', data: viewContent, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.10)', fill: true, tension: 0.35, pointRadius: 2 },
+                            { label: 'AddToCart', data: addToCart, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.10)', fill: true, tension: 0.35, pointRadius: 2 },
+                            { label: 'Purchase', data: purchases, borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.10)', fill: true, tension: 0.35, pointRadius: 2 },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            x: { grid: { color: grid }, ticks: { color: tick } },
+                            y: { beginAtZero: true, grid: { color: grid }, ticks: { color: tick, precision: 0 } },
+                        },
+                    },
+                });
+            }
+
+            const revCtx = document.getElementById('revenueLineChart');
+            if (revCtx) {
+                new Chart(revCtx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'Revenue (BDT)', data: revenue, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.12)', fill: true, tension: 0.35, pointRadius: 2 },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: grid }, ticks: { color: tick } },
+                            y: { beginAtZero: true, grid: { color: grid }, ticks: { color: tick } },
+                        },
+                    },
+                });
+            }
+
+            const funnelCtx = document.getElementById('funnelChart');
+            if (funnelCtx) {
+                new Chart(funnelCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['ViewContent', 'AddToCart', 'Purchase'],
+                        datasets: [{
+                            data: [@json($this->viewContentCount), @json($this->addToCartCount), @json($this->purchaseCount)],
+                            backgroundColor: ['rgba(6,182,212,0.6)', 'rgba(245,158,11,0.6)', 'rgba(34,197,94,0.6)'],
+                            borderColor: ['#06b6d4', '#f59e0b', '#22c55e'],
+                            borderWidth: 1,
+                            borderRadius: 10,
+                        }],
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, grid: { color: grid }, ticks: { color: tick, precision: 0 } },
+                            y: { grid: { display: false }, ticks: { color: tick } },
+                        },
+                    },
+                });
+            }
+        })();
+    </script>
 </x-filament::page>

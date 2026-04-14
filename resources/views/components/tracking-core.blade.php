@@ -116,9 +116,11 @@
                 ...((params && params.metadata) ? params.metadata : {}),
             };
 
-            const finalParams = {
-                ...(params || {}),
-            };
+            const finalParams = { ...(params || {}) };
+            const eventParams = { ...(params || {}) };
+            // Keep metadata clean: store event params under metadata.event
+            delete eventParams.metadata;
+            metadata.event = eventParams;
 
             // Prevent duplicates: debounce per (event + important keys)
             const debounceKey = gaEvent + '::' + JSON.stringify({

@@ -2753,20 +2753,22 @@ footer::after {
 }
 
 .theme-toggle.active{
-  background: rgba(2,6,23,0.86) !important;
-  border-color: rgba(59,130,246,0.35) !important;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.38) !important;
+  /* Match your reference: active = blue gradient pill */
+  background: linear-gradient(135deg, var(--amber), var(--amber-2)) !important;
+  border-color: rgba(15,185,247,0.26) !important;
+  box-shadow: 0 16px 48px rgba(15,185,247,0.35) !important;
 }
 
 .theme-toggle.active .toggle-knob{
-  transform: translateX(calc(var(--toggle-width) - var(--knob-size) - 8px)) !important;
-  background: linear-gradient(180deg, #0b1220 0%, #111827 100%) !important;
-  border-color: rgba(255,255,255,0.14) !important;
-  box-shadow: 0 10px 18px rgba(0,0,0,0.45) !important;
+  transform: translateX(calc(var(--toggle-width) - var(--knob-size) - 8px)) scale(1.05) !important;
+  background: linear-gradient(145deg, #fff, #f8f9ff) !important;
+  border-color: rgba(255,255,255,0.9) !important;
+  box-shadow: 0 6px 20px rgba(15,185,247,0.4), inset 0 1px 0 rgba(255,255,255,1) !important;
 }
 
-.theme-toggle.active .sun-icon{ opacity: 0.35 !important; }
-.theme-toggle.active .moon-icon{ opacity: 0.95 !important; }
+/* Match your reference behavior: active shows moon */
+.theme-toggle.active .sun-icon{ opacity: 0 !important; }
+.theme-toggle.active .moon-icon{ opacity: 1 !important; }
 
 @media (max-width: 640px){
   /* Override earlier mobile rules that hide toggle internals */
@@ -2846,20 +2848,22 @@ body:not([data-theme="dark"]) .section-dark .review-user span { color: var(--mut
 }
 
 .theme-toggle.active {
-  background: rgba(2,6,23,0.85) !important;
-  border-color: rgba(59,130,246,0.35) !important;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.35) !important;
+  /* Match your reference: active = blue gradient pill */
+  background: linear-gradient(135deg, var(--amber), var(--amber-2)) !important;
+  border-color: rgba(15,185,247,0.26) !important;
+  box-shadow: 0 16px 48px rgba(15,185,247,0.35) !important;
 }
 
 .theme-toggle.active .toggle-knob {
-  transform: translateX(28px) !important;
-  background: linear-gradient(180deg, #0b1220 0%, #111827 100%) !important;
-  border-color: rgba(255,255,255,0.14) !important;
-  box-shadow: 0 10px 18px rgba(0,0,0,0.45) !important;
+  transform: translateX(calc(var(--toggle-width) - var(--knob-size) - 8px)) scale(1.05) !important;
+  background: linear-gradient(145deg, #fff, #f8f9ff) !important;
+  border-color: rgba(255,255,255,0.9) !important;
+  box-shadow: 0 6px 20px rgba(15,185,247,0.4), inset 0 1px 0 rgba(255,255,255,1) !important;
 }
 
-.theme-toggle.active .sun-icon { opacity: .35 !important; }
-.theme-toggle.active .moon-icon { opacity: .95 !important; }
+/* Match your reference behavior: active shows moon */
+.theme-toggle.active .sun-icon { opacity: 0 !important; }
+.theme-toggle.active .moon-icon { opacity: 1 !important; }
 
 /* ================= UI MATCH OVERRIDES (LIKE PROVIDED) ================= */
 /* Topbar spacing + premium pill toggle placement */

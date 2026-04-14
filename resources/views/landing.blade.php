@@ -2984,7 +2984,7 @@ footer::after {
         <p class="section-sub">সম্পূর্ণ specification এক নজরে</p>
 
         <div class="card glass-dark" style="padding:20px; border-radius:20px;">
-            <table style="width:100%; border-collapse:collapse; color:white;">
+            <table style="width:100%; border-collapse:collapse;">
                 <tr>
                     <td style="padding:12px; border-bottom:1px solid rgba(255,255,255,0.1);">ওজন</td>
                     <td style="padding:12px; border-bottom:1px solid rgba(255,255,255,0.1);">০.৫৯৯ কেজি (৫৯৯ গ্রাম)</td>
@@ -3494,9 +3494,8 @@ footer::after {
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 function updateMobileIcon(theme) {
-  if (window.innerWidth <= 640) {
-    themeToggle.innerHTML = theme === 'dark' ? '☀️' : '🌙';  /* ✅ FIXED: innerHTML */
-  }
+  // Keep toggle structure (knob + icons) for premium look.
+  // We only let CSS handle responsiveness.
 }
         // Load saved theme or detect system preference
         const savedTheme = localStorage.getItem('theme') || 
@@ -3512,7 +3511,7 @@ function updateMobileIcon(theme) {
   themeToggle.classList.toggle('active');
   localStorage.setItem('theme', newTheme);
 
-  updateMobileIcon(newTheme); // 👈 ADD THIS
+  updateMobileIcon(newTheme);
 });
         
         updatePrice();
@@ -3532,6 +3531,112 @@ function animateGlow() {
 
     requestAnimationFrame(animateGlow);
 }
+
+/* ================= LIGHT MODE VISIBILITY FIXES ================= */
+body:not([data-theme="dark"]) .section-dark {
+  background: linear-gradient(180deg, rgba(230, 243, 255, 0.9) 0%, rgba(240, 248, 255, 1) 100%);
+  border-top: 1px solid rgba(15,185,247,0.12);
+  border-bottom: 1px solid rgba(15,185,247,0.12);
+}
+
+body:not([data-theme="dark"]) .section-dark .section-title {
+  color: var(--text);
+}
+
+body:not([data-theme="dark"]) .section-dark .section-sub {
+  color: var(--muted);
+}
+
+body:not([data-theme="dark"]) .section-dark .glass-dark {
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(15,185,247,0.18);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+body:not([data-theme="dark"]) .section-dark table {
+  color: var(--text) !important;
+}
+
+body:not([data-theme="dark"]) .section-dark table td {
+  border-bottom-color: rgba(15,185,247,0.12) !important;
+}
+
+body:not([data-theme="dark"]) .section-dark .review-card {
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(15,185,247,0.18);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+body:not([data-theme="dark"]) .section-dark .review-card p,
+body:not([data-theme="dark"]) .section-dark .review-user span {
+  color: var(--muted);
+}
+
+/* ================= PREMIUM THEME TOGGLE (OVERRIDE) ================= */
+.theme-toggle {
+  width: 62px !important;
+  height: 34px !important;
+  border-radius: 999px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(15,185,247,0.22) !important;
+  background: rgba(255,255,255,0.88) !important;
+  backdrop-filter: blur(14px) !important;
+  box-shadow: 0 10px 30px rgba(15,60,95,0.14) !important;
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease !important;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 16px 44px rgba(15,60,95,0.18) !important;
+}
+
+.theme-toggle:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+.theme-toggle .sun-icon,
+.theme-toggle .moon-icon {
+  font-size: 14px !important;
+  opacity: .9 !important;
+  transition: opacity .18s ease !important;
+}
+
+.theme-toggle .sun-icon { left: 10px !important; position: absolute !important; }
+.theme-toggle .moon-icon { right: 10px !important; position: absolute !important; opacity: .35 !important; }
+
+.theme-toggle .toggle-knob {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5ff 100%) !important;
+  box-shadow: 0 10px 18px rgba(2,6,23,0.18) !important;
+  border: 1px solid rgba(15,185,247,0.18) !important;
+  left: 4px !important;
+  top: 4px !important;
+  transform: translateX(0) !important;
+}
+
+.theme-toggle.active {
+  background: rgba(2,6,23,0.85) !important;
+  border-color: rgba(59,130,246,0.35) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.35) !important;
+}
+
+.theme-toggle.active .toggle-knob {
+  transform: translateX(28px) !important;
+  background: linear-gradient(180deg, #0b1220 0%, #111827 100%) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 10px 18px rgba(0,0,0,0.45) !important;
+}
+
+.theme-toggle.active .sun-icon { opacity: .35 !important; }
+.theme-toggle.active .moon-icon { opacity: .95 !important; }
 
 hero.addEventListener("mousemove", (e) => {
     const rect = hero.getBoundingClientRect();

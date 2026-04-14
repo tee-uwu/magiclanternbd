@@ -2676,6 +2676,107 @@ footer::after {
 
 }
 
+/* ================= SECTION DARK (LIGHT MODE FIX) ================= */
+.section-dark {
+  background: linear-gradient(135deg, var(--dark-bg), var(--dark-bg-2));
+  color: #ffffff;
+}
+
+/* Ensure readable text + cards inside dark sections */
+.section-dark .section-title { color: #3dd5ff; }
+.section-dark .section-sub { color: rgba(255,255,255,0.70); }
+.section-dark .glass-dark { color: #ffffff; }
+.section-dark .review-card { color: #ffffff; }
+
+/* ================= PREMIUM THEME TOGGLE (FINAL OVERRIDE) ================= */
+.theme-toggle{
+  --toggle-width: 64px;
+  --toggle-height: 36px;
+  --knob-size: 28px;
+  --transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  position: relative !important;
+  width: var(--toggle-width) !important;
+  height: var(--toggle-height) !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(15,185,247,0.22) !important;
+  background: rgba(255,255,255,0.72) !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 10px 30px rgba(15,60,95,0.16) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  transition: var(--transition) !important;
+}
+
+.theme-toggle:hover{
+  transform: translateY(-1px) !important;
+  box-shadow: 0 16px 44px rgba(15,60,95,0.20) !important;
+}
+
+.theme-toggle:active{
+  transform: translateY(0) scale(0.98) !important;
+}
+
+.theme-toggle .sun-icon,
+.theme-toggle .moon-icon{
+  position: absolute !important;
+  font-size: 16px !important;
+  z-index: 2 !important;
+  transition: var(--transition) !important;
+}
+
+.theme-toggle .sun-icon{
+  left: 8px !important;
+  opacity: 1 !important;
+}
+
+.theme-toggle .moon-icon{
+  right: 8px !important;
+  opacity: 0.35 !important;
+}
+
+.theme-toggle .toggle-knob{
+  position: absolute !important;
+  width: var(--knob-size) !important;
+  height: var(--knob-size) !important;
+  border-radius: 999px !important;
+  left: 4px !important;
+  top: 4px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5ff 100%) !important;
+  border: 1px solid rgba(15,185,247,0.18) !important;
+  box-shadow: 0 10px 18px rgba(2,6,23,0.18) !important;
+  transform: translateX(0) !important;
+  transition: var(--transition) !important;
+  z-index: 3 !important;
+}
+
+.theme-toggle.active{
+  background: rgba(2,6,23,0.86) !important;
+  border-color: rgba(59,130,246,0.35) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.38) !important;
+}
+
+.theme-toggle.active .toggle-knob{
+  transform: translateX(calc(var(--toggle-width) - var(--knob-size) - 8px)) !important;
+  background: linear-gradient(180deg, #0b1220 0%, #111827 100%) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 10px 18px rgba(0,0,0,0.45) !important;
+}
+
+.theme-toggle.active .sun-icon{ opacity: 0.35 !important; }
+.theme-toggle.active .moon-icon{ opacity: 0.95 !important; }
+
+@media (max-width: 640px){
+  /* Override earlier mobile rules that hide toggle internals */
+  .theme-toggle .toggle-knob,
+  .theme-toggle .sun-icon,
+  .theme-toggle .moon-icon{
+    display: block !important;
+  }
+}
+
 /* ================= LIGHT MODE VISIBILITY FIXES ================= */
 body:not([data-theme="dark"]) .section-dark {
   background: linear-gradient(180deg, rgba(230, 243, 255, 0.9) 0%, rgba(240, 248, 255, 1) 100%);

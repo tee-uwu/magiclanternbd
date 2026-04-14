@@ -2860,6 +2860,58 @@ body:not([data-theme="dark"]) .section-dark .review-user span { color: var(--mut
 
 .theme-toggle.active .sun-icon { opacity: .35 !important; }
 .theme-toggle.active .moon-icon { opacity: .95 !important; }
+
+/* ================= UI MATCH OVERRIDES (LIKE PROVIDED) ================= */
+/* Topbar spacing + premium pill toggle placement */
+.topbar-inner { gap: 20px; }
+.theme-toggle { margin-left: auto; margin-right: -8px; }
+
+/* Ensure the Order promo block looks like provided */
+.order-left-space { display: flex; }
+.order-promo { border-radius: 24px; padding: 28px; }
+.countdown-wrap { display: inline-flex; align-items: center; gap: 12px; }
+.countdown-time { font-weight: 800; letter-spacing: 1px; }
+
+/* Mobile: keep the premium icon toggle like provided and keep order section readable */
+@media (max-width: 640px) {
+  /* Do not hide the order promo on mobile */
+  .order-left-space { display: block !important; }
+  .order-layout { display: flex !important; flex-direction: column !important; gap: 16px !important; }
+  .order-card { position: static !important; width: 100% !important; }
+
+  /* Match provided mobile toggle (icon circle) */
+  .theme-toggle {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: rgba(255,255,255,0.85) !important;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+  .theme-toggle .toggle-knob { display: none !important; }
+  .theme-toggle .sun-icon,
+  .theme-toggle .moon-icon {
+    position: static !important;
+    opacity: 1 !important;
+  }
+  /* Light -> show moon */
+  .theme-toggle .sun-icon { display: none !important; }
+  .theme-toggle .moon-icon { display: block !important; }
+  /* Dark -> show sun */
+  [data-theme="dark"] .theme-toggle .sun-icon { display: block !important; }
+  [data-theme="dark"] .theme-toggle .moon-icon { display: none !important; }
+  [data-theme="dark"] .theme-toggle {
+    background: rgba(15,23,42,0.9) !important;
+    color: #facc15 !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5) !important;
+  }
+}
 </style>
       
 </head>

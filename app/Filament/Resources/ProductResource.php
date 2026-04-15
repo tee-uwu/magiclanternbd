@@ -15,7 +15,7 @@ class ProductResource extends Resource
     protected static bool $shouldRegisterNavigation = true;
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Products Management';
 
     public static function form(Form $form): Form

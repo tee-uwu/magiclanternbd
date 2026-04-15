@@ -15,7 +15,7 @@ class ContentResource extends Resource
     protected static bool $shouldRegisterNavigation = true;
     protected static ?string $model = Content::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Site Settings';
 
     public static function form(Form $form): Form

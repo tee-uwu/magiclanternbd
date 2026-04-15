@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\TrackingEvent;
 use Carbon\CarbonImmutable;
 use Filament\Widgets\ChartWidget;
+use Livewire\Attributes\On;
 
 class PageViewsOverTimeChart extends ChartWidget
 {
@@ -12,12 +13,9 @@ class PageViewsOverTimeChart extends ChartWidget
 
     public string $range = 'today'; // today|7d|30d
 
-    protected int | string | null $height = '320px';
+    protected static ?string $maxHeight = '320px';
 
-    protected $listeners = [
-        'analyticsRangeUpdated' => 'setRange',
-    ];
-
+    #[On('analyticsRangeUpdated')]
     public function setRange(string $range): void
     {
         $this->range = in_array($range, ['today', '7d', '30d'], true) ? $range : 'today';

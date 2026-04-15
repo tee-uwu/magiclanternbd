@@ -5,9 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReviewResource\Pages;
 use App\Models\Review;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 
 class ReviewResource extends Resource
@@ -64,12 +64,11 @@ class ReviewResource extends Resource
             Tables\Columns\TextColumn::make('rating')
                 ->label('Rating')
                 ->formatStateUsing(fn ($state) => '⭐ ' . $state),
-            Tables\Columns\BadgeColumn::make('is_published')
+            Tables\Columns\TextColumn::make('is_published')
                 ->label('Status')
-                ->colors([
-                    'true' => 'success',
-                    'false' => 'danger',
-                ]),
+                ->formatStateUsing(fn ($state) => $state ? __('Published') : __('Draft'))
+                ->badge()
+                ->color(fn ($state) => $state ? 'success' : 'danger'),
             Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
         ])
         ->filters([

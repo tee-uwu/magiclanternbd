@@ -5,9 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\LandingImageResource\Pages;
 use App\Models\LandingImage;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 
 class LandingImageResource extends Resource
@@ -38,7 +38,7 @@ protected static ?string $model = LandingImage::class;
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('section')
-                    ->enum(LandingImage::sections())
+                    ->formatStateUsing(fn ($state) => LandingImage::sections()[$state] ?? $state)
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image')
                     ->disk('public'),

@@ -32,7 +32,7 @@
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">From Purchase events</p>
                 </div>
                 <div class="rounded-xl bg-success-500/10 p-2 text-success-600 dark:text-success-400">
-                    <x-heroicon-o-cash class="h-6 w-6" />
+                    <x-heroicon-o-banknotes class="h-6 w-6" />
                 </div>
             </div>
         </x-filament::card>
@@ -80,7 +80,7 @@
                     <h2 class="mt-2 text-3xl font-bold">{{ $this->purchaseCount }}</h2>
                 </div>
                 <div class="rounded-xl bg-success-500/10 p-2 text-success-600 dark:text-success-400">
-                    <x-heroicon-o-badge-check class="h-6 w-6" />
+                    <x-heroicon-o-check-circle class="h-6 w-6" />
                 </div>
             </div>
         </x-filament::card>

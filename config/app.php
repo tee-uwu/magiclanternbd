@@ -36,7 +36,7 @@ return [
         /*
          * Package Service Providers...
          */
-        Filament\FilamentServiceProvider::class,
+        // Filament registers via composer auto-discovery; the panel is defined in App\Providers\Filament\AdminPanelProvider.
 
         /*
          * Application Service Providers...
@@ -46,7 +46,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\FilamentServiceProvider::class,
+        App\Providers\Filament\AdminPanelProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([

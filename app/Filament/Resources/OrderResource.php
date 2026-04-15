@@ -5,9 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Models\Order;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 
 class OrderResource extends Resource
@@ -92,9 +92,10 @@ class OrderResource extends Resource
                 ->limit(20)
                 ->color('gray'),
 
-            Tables\Columns\BadgeColumn::make('quantity')
+            Tables\Columns\TextColumn::make('quantity')
                 ->label('Qty')
                 ->alignCenter()
+                ->badge()
                 ->color('primary'),
 
             Tables\Columns\TextColumn::make('total_price')
@@ -103,7 +104,8 @@ class OrderResource extends Resource
                 ->weight('bold')
                 ->color('success'),
 
-            Tables\Columns\BadgeColumn::make('status')
+            Tables\Columns\TextColumn::make('status')
+                ->badge()
                 ->color(fn ($state) => match ($state) {
                     'pending' => 'warning',
                     'confirmed' => 'success',

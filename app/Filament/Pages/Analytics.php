@@ -8,8 +8,6 @@ use Filament\Pages\Page;
 use App\Models\TrackingEvent;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-
 class Analytics extends Page
 {
     protected static bool $shouldRegisterNavigation = true;
@@ -25,14 +23,14 @@ class Analytics extends Page
     public function mount(): void
     {
         $this->range = 'today';
-        $this->emit('analyticsRangeUpdated', $this->range);
+        $this->dispatch('analyticsRangeUpdated', range: $this->range);
     }
 
     public function updatedRange(): void
     {
         // Trigger a Livewire re-render even if counts end up identical.
         $this->refreshKey++;
-        $this->emit('analyticsRangeUpdated', $this->range);
+        $this->dispatch('analyticsRangeUpdated', range: $this->range);
     }
 
     private function startAt(): CarbonImmutable
@@ -195,7 +193,7 @@ class Analytics extends Page
         ];
     }
 
-    protected function getHeaderWidgetsColumns(): int
+    public function getHeaderWidgetsColumns(): int | string | array
     {
         return 2;
     }

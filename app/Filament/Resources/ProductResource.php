@@ -5,9 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 
 class ProductResource extends Resource
@@ -79,14 +79,12 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('old_price')->label('Old Price (৳)')->sortable(),
                 Tables\Columns\TextColumn::make('discount')->label('Discount (%)')->sortable(),
 
-                Tables\Columns\BadgeColumn::make('is_active')
-    ->label('Status')
-    ->formatStateUsing(fn ($state) => $state ? 'Active' : 'Inactive')
-    ->colors([
-        'success' => fn ($state) => $state === true,
-        'danger' => fn ($state) => $state === false,
-    ])
-    ->sortable(),
+                Tables\Columns\TextColumn::make('is_active')
+                    ->label('Status')
+                    ->formatStateUsing(fn ($state) => $state ? 'Active' : 'Inactive')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'danger')
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\Filter::make('active')

@@ -6,9 +6,9 @@ use App\Filament\Resources\PostResource\Pages;
 use App\Models\Post;
 
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 
 class PostResource extends Resource
@@ -42,14 +42,11 @@ class PostResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('is_published')
+                Tables\Columns\TextColumn::make('is_published')
                     ->label('Status')
                     ->formatStateUsing(fn ($state) => $state ? 'Published' : 'Draft')
-                    ->colors([
-                        'success' => fn ($state) => $state === true,
-                        'danger' => fn ($state) => $state === false,
-                    ])
-                    ->default(false)
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'danger')
                     ->sortable(),
             ])
             ->filters([
